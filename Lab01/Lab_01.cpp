@@ -1,6 +1,6 @@
 #include <iostream>
 
-
+//Program Checks user entered password
 
 using namespace std;
 
