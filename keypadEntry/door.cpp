@@ -2,6 +2,8 @@
 
 using namespace std;
 
+//this program mimicks a keypad entry door
+
 class Door{
     string password;
     bool locked;
