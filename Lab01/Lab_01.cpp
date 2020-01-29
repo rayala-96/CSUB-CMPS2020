@@ -1,6 +1,6 @@
 #include <iostream>
 
-//Program Checks user entered password
+
 
 using namespace std;
 
@@ -23,8 +23,12 @@ class PasswordValidator{
             upper_count = 0;
             symbol_count = 0;
             
+
             lengthCount = input.length();
-                for(int i = 0; i < input.length(); i++){
+           
+            //Keeping track of the count on all requirements needed    
+           
+            for(int i = 0; i < input.length(); i++){
                     if(isupper(input[i])){
                         upper_count++;
                        
@@ -52,6 +56,8 @@ class PasswordValidator{
 
         }
 
+        //Function to compare the allowed symbols in the entered password
+
         bool find_char(string allowed, char c){
             bool val = false;
             for ( int i = 0; i < allowed.length(); i++ ){
@@ -62,17 +68,38 @@ class PasswordValidator{
             
            return val;
         }
-        void missingRequirements(){
+
+        // Check to see if all requirements are met
+
+        bool lengthMet(){
+            bool length = false;
+            
             if( lengthCount < minLength)
-                cout << "Password not long enough\n";
+                length = true;
+            
+            return length;
+
+        }
+        bool lowerMet(){
+            bool lower = false;
             if( lower_count < minLower )
-                cout << "Password does not have enough lower case letters\n";
+                lower = true;
+        
+            return lower;
+        }
+        bool  upperMet(){
+            bool upper = false;
             if ( upper_count < minUpper )
-                cout << "Password does not have enough Upper case letters\n";
+                upper = true;
+            
+            return upper;
+        }
+        bool symbolMet(){
+            bool symbol = false;
             if ( symbol_count < minSymbols )
-                cout << "Password does not have enough symbols\n";
+                symbol = true;
 
-
+            return symbol;
         }
    
 };
@@ -93,9 +120,24 @@ int main() {
   else 
       cout << input << " is not strong enough" << endl;
 
-   pv.missingRequirements();
-    // EXTRA CREDIT
-    // Show messages like "not enough upper case " or "too short"
+        //Extra Credit
+        //Show messages like "not enough upper case" or "too short"
+   if(pv.lengthMet())
+      cout << "length count not met\n";
+
+   
+   if(pv.lowerMet())
+      cout << "Lower case letters count not met\n";
+
+   
+   if(pv.upperMet())
+        cout << "Upper case letters count not met\n";
+
+   if(pv.symbolMet())
+       cout << "Symbols count not met\n";
+   
+    
+    
 
   return 0;
 }
