@@ -45,6 +45,9 @@ int totalpop(StateInfo *ptr){
 
 
 int main() {
+	
+    //Instantiating new structures
+
     StateInfo *head;
     StateInfo *state1 = new StateInfo;
 
