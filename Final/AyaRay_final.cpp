@@ -67,21 +67,20 @@ class RescueOps     // Rescue Operations
             Rescue * firstnode = NULL;
             bool found = false;
             int i = 0;
-            while(rescues[i] != NULL){
+            while(i < types && rescues[i] != NULL){
                 if(rescues[i]->get_type() == type){
                     firstnode = rescues[i];
                     break;
                 }
-                
                 i++;
-            }      
+            }
             
 
 
             // check -rescues- array if any collection of -type- has been started
             // returns the head pointer for the list of -type, if found
             // returns NULL if no list was found for -type-
-            cout << "(find)Type: " << firstnode->get_type() << endl;
+
             return firstnode;
         }
     public:
@@ -116,40 +115,41 @@ class RescueOps     // Rescue Operations
         void add(string n, string t, int a)     // name, type, age  <== PART 1 ========
         {
             Rescue * node = create(n, t, a);
-            cout << "(add)New node type: " << node->get_type() << endl;
+
             count++;
 
             if(types == 0){
-                types++;
-                rescues[0] = node;
-                cout << "(add)Added First Type\n";
-            }
-            else{
-
-            if(is_new(t)){
-                types++;
                 rescues[types] = node;
-                cout << "(add)New\n";
-            }
-                
-            
-            else{
-                
-                Rescue *head = find_type(node->get_type());
-                cout << "head : " << head->get_name() << endl;
-                
-                Rescue *hCopy = head;
-                if(head->next == NULL)
-                    head->next = node;
-                else{
-                        while(hCopy != NULL){
-                            hCopy = hCopy->next;
-                        }
-                        hCopy->next = node;
-                        cout << hCopy->get_name();
+                types++;
 
-                    }
+            }
+
+            else{
+
+                if(is_new(t)){
+                    rescues[types] = node;
+                    types++;
+
+                }
+                    
                 
+                else{
+                    
+                    Rescue *head = find_type(t);
+
+                    
+                    Rescue *hCopy = head;
+                    if(head->next == NULL)
+                        head->next = node;
+                    else{
+                            while(hCopy->next != NULL){
+                                hCopy = hCopy->next;
+                            }
+                            hCopy->next = node;
+
+
+                        }
+                    
                 }
             }
     
@@ -160,7 +160,7 @@ class RescueOps     // Rescue Operations
 
             // Otherwise, find the head node of the matching type using find_type()
             // then add the new node to the end of the list
-            cout << "\n(add)Type Count: " << types;
+
         }
 
        Rescue * find_youngest(string t)  // PART 1 <=========
@@ -227,10 +227,20 @@ class RescueOps     // Rescue Operations
         int get(string t, Rescue list[])    // PART 2 <---------------------------------------------------------
         {
             int i = 0;
+            
+            Rescue *head = find_type(t);
+            while (head != NULL){
+                list[i] = *head;
+                head = head->next;
+                i++;
+            }
+        
+                
+
             // Fill up the -list- array with all the nodes of type -t-            
             // this function returns the count, i, of rescues of -type- found
             
-            
+
             return i;
         }
 
@@ -251,7 +261,7 @@ class RescueOps     // Rescue Operations
             
             return c;
         }
-
+/*
         void show(string t)  // PART 1 <==== 
         {   
             
@@ -259,7 +269,7 @@ class RescueOps     // Rescue Operations
             Rescue *hCopy = head;
 
             while(hCopy != NULL){
-                cout << "Name " << hCopy->get_name() << " Age: " << hCopy->get_age();
+                cout << " Name: " << hCopy->get_name() << " Age: " << hCopy->get_age();
 
                 hCopy = hCopy->next;
             }
@@ -270,24 +280,55 @@ class RescueOps     // Rescue Operations
             // this is the dirty way, just so you can see
             // the contents of the collections
         }
-
+*/
         // extra credit  <------------------------------------------------------------
         double average_age(string t)
         {
-            return 0;
+            int totalRescues = count_type(t);
+            double ageSum = 0;
+            Rescue *head = find_type(t);
+            while(head != NULL){
+                ageSum += head->get_age();
+                head = head->next;
+            }
+            
+            return totalRescues == 0 ? 0 : ageSum / totalRescues;
         }
+
 };
 
 // PART 2  <---------------------------------------------------------------------------
-void sort(Rescue data[])
+void sort(Rescue data[], int size)
 {
+    
+    Rescue temp;
+    int length = size;
+    for(int i = 0; i <= length - 1; i++){
+        for(int j = i + 1; j <= length - 1; j++){
+            if(data[i].get_age() > data[j].get_age()){
+                temp = data[i];
+                data[i] = data[j];
+                data[j] = temp;
+            }
+        }
+    }
     // sort the data array by rescue's age (youngest to oldest)
     // do not use STL
 }
 
 // PART 2  <---------------------------------------------------------------------------
-void show(Rescue data[])
+void show(Rescue data[], int size)
 {
+
+    int length = size;
+
+    
+    for(int i = 0; i < length; i++){
+        int years = data[i].get_age() / 12;
+        int months = data[i].get_age() % 12;
+        cout << " Name: " << data[i].get_name() << " Age: " << years << " years, " << months << " months " << " | ";
+
+    }
     // show the rescues in the data array
     // convert the age into years and months when displaying
     // something like "meow1 is 2 years, 2 months
@@ -307,7 +348,7 @@ int main()
         cout << "  --------------------------" << endl;
         cout << "  You can enter 'cat' 'dog' or any other rescue type " << endl;
         cout << "  You can also type commands: 'stop', 'youngest', 'oldest', 'show' " << endl;
-//        cout << "  Additional commands: 'average' " << endl;  // EXTRA CREDIT   // <-----------------------------------------
+        cout << "  Additional commands: 'average' " << endl;  // EXTRA CREDIT   // <-----------------------------------------
         cout << "  Enter command or rescue type: ";
         cin >> input;
 
@@ -335,16 +376,48 @@ int main()
             }
             else if (input == "oldest")         // PART 2  <------------------------------------------------------------------
             {
+                cout << endl;
+                cout << "You have chosen to view the oldest, of what type? ";
+                cin >> type;
+
+                // The RescueOps object contains the collection of rescues
+                // find and display the information for the oldest -type-
+                Rescue * found = ops.find_oldest(type);
+
+                cout << "The oldest " << type << " found was: ";
+
+                // show details for the youngest 
+                if (found != NULL)
+                {
+                    cout << "  " << found->get_name() << ", " << found->get_age() << " months " << endl;
+                }
+                else
+                    cout << "No " << type << " rescues" << endl;
                 // similar to youngest above, show oldest rescue 
             }
-            // else if (input == "average")     // EXTRA CREDIT  <------------------------------------------------------------
-            // {
+            else if (input == "average")     // EXTRA CREDIT  <------------------------------------------------------------
+            {
+                cout << endl;
+                cout << "You have chosen to view the average, of what type? ";
+                cin >> type;
+
+                // The RescueOps object contains the collection of rescues
+                // find and display the information for the oldest -type-
+                double average = ops.average_age(type);
+
+                // show details for the youngest 
+                if (average != 0)
+                {
+                    cout << " Average of " << type << " age is: " << average << " months\n";
+                }
+                else
+                    cout << "No type: " << type << " to find average\n";
             //   // similar to youngest above, but only show average age of rescues of user-inputed type
             // }
             // else if (input == "oldestall")   // EXTRA CREDIT  <------------------------------------------------------------
             // {
             //   // show the name and age of the oldest rescue, no matter what type
-            // }
+             }
             else if (input == "show")  // PART 2
             {
                 string type;
@@ -363,14 +436,14 @@ int main()
 
                     // because it's difficult to sort a linked list, copy the list of rescues of -type-
                     // into the sorted array
-                    // ops.get(type, sorted); <- PART 2 ---------------- Uncomment
+                    ops.get(type, sorted);// <- PART 2 ---------------- Uncomment
 
                     // then sort it
-                    // sort(sorted);          <- PART 2 ---------------- Uncomment
+                     sort(sorted, count);//          <- PART 2 ---------------- Uncomment
 
                     // then show it
-                    // show(sorted);          <- PART 2 ---------------- Uncomment
-                    ops.show(type);  // PART 2 <-------------------- Get rid of this line that calls the dirty show
+                     show(sorted, count);//          <- PART 2 ---------------- Uncomment
+                    //ops.show(type);  // PART 2 <-------------------- Get rid of this line that calls the dirty show
                     
                     delete [] sorted;
                 }
